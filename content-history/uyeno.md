@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-01
+- INSS de obra: Receita cruza dados de alvará/CNO com cada construção/reforma
+- Compact living: móveis multifuncionais, integração de ambientes e luz em camadas em apartamentos pequenos
+- O que não pode faltar no contrato de honorários do arquiteto (escopo, fases, alterações)
+
 ## 2026-07-29
 - Cor do Ano 2026: Cloud Dancer e paleta terrosa/natural
 - Reforma em apartamento exige aviso formal ao síndico (NBR 16.280, plano de obra, ART/RRT)
