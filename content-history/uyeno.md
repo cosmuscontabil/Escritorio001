@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-03
+- Tendência 2026: península substitui a ilha de cozinha (mais barata e funcional)
+- Impermeabilização malfeita no banheiro custa até 5x mais pra consertar depois
+- NBR 9050 (acessibilidade) obrigatória em projetos comerciais, risco de multa/interdição
+
 ## 2026-08-01
 - INSS de obra: Receita cruza dados de alvará/CNO com cada construção/reforma
 - Compact living: móveis multifuncionais, integração de ambientes e luz em camadas em apartamentos pequenos
