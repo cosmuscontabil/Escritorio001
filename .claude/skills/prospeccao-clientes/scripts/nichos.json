@@ -30,6 +30,8 @@
   "auto pecas": [["shop", "car_parts"]],
   "escritorio de engenharia": [["office", "engineer"]],
   "arquitetura": [["office", "architect"]],
+  "arquiteto": [["office", "architect"]],
+  "arquitetos": [["office", "architect"]],
   "escritorio de arquitetura": [["office", "architect"]],
   "seguradora": [["office", "insurance"]],
   "corretora de seguros": [["office", "insurance"]],
