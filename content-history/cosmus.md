@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-05
+- Nova isenção de IR (até R$5 mil/mês) já vale em 2026, só aparece na declaração de 2027 (Reforma da Renda)
+- Ultrapassou o limite do MEI: cenários diferentes conforme o % de excesso (até 20% vs acima de 20%)
+- Split payment: imposto (IBS/CBS) descontado automaticamente no pagamento, impacto no fluxo de caixa
+
 ## 2026-08-03
 - IBS/CBS hoje só vale para Lucro Presumido/Real — Simples Nacional e MEI só entram em 04/01/2027
 - Exclusão de ofício do Simples por dívida: prazo de 90 dias pra regularizar (janela de setembro em 2026)

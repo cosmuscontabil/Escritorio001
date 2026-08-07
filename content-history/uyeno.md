@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-05
+- Garantia legal de 5 anos do construtor (art. 618 CC) para vício estrutural
+- Tendência de fachada/vitrine comercial 2026 (minimalismo, vidro temperado, aço corten)
+- Reforma em imóvel alugado: o que pode sem autorização e o que exige autorização por escrito
+
 ## 2026-08-03
 - Tendência 2026: península substitui a ilha de cozinha (mais barata e funcional)
 - Impermeabilização malfeita no banheiro custa até 5x mais pra consertar depois
