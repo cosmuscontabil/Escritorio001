@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-07
+- Regularização espontânea de erro no IBS/CBS: 60 dias pra corrigir sem multa
+- ISS será extinto gradualmente até 2032, substituído pelo IBS
+- Pejotização/subordinação disfarçada: risco de vínculo empregatício pra PJ com horário fixo/exclusividade
+
 ## 2026-08-05
 - Nova isenção de IR (até R$5 mil/mês) já vale em 2026, só aparece na declaração de 2027 (Reforma da Renda)
 - Ultrapassou o limite do MEI: cenários diferentes conforme o % de excesso (até 20% vs acima de 20%)

@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-07
+- Como verificar registro do arquiteto no CAU antes de contratar ("Ache um Arquiteto")
+- Tendência paisagismo 2026: hortas integradas à decoração, módulos verticais
+- Energia solar na reforma: economia de até 95% na conta, payback de 4-8 anos
+
 ## 2026-08-05
 - Garantia legal de 5 anos do construtor (art. 618 CC) para vício estrutural
 - Tendência de fachada/vitrine comercial 2026 (minimalismo, vidro temperado, aço corten)
