@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-25
+- Setembro/2026: janela decisiva pra escolher regime (Simples x novo sistema) e IBS/CBS dentro ou fora do DAS
+- DEFIS agora cruzada com o IRPF dos sócios, deixou de ser só formalidade
+- Não existe "imposto sobre o Pix", mas Receita cruza movimentação (e-Financeira, Harpia/T-Rex) com a declaração
+
 ## 2026-08-07
 - Regularização espontânea de erro no IBS/CBS: 60 dias pra corrigir sem multa
 - ISS será extinto gradualmente até 2032, substituído pelo IBS
