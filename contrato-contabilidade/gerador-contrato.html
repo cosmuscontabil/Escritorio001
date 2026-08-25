@@ -1,0 +1,1074 @@
+<title>Gerador de Contrato Contábil</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+  :root {
+    --bg: #eef1ee;
+    --surface: #ffffff;
+    --surface-alt: #e3ece4;
+    --surface-alt-2: #d8e4da;
+    --ink: #16241d;
+    --ink-soft: #47594d;
+    --ink-faint: #7c8c80;
+    --accent: #2f6b52;
+    --accent-strong: #1f4f3b;
+    --accent-contrast: #f6faf7;
+    --line: #cdd8cf;
+    --paper: #fffdf9;
+    --paper-line: #ddd6c3;
+    --danger: #a3432c;
+    --shadow: 0 20px 45px -25px rgba(20, 35, 26, 0.45);
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101813;
+      --surface: #16221c;
+      --surface-alt: #1c2a22;
+      --surface-alt-2: #223529;
+      --ink: #e8ede9;
+      --ink-soft: #a7bbac;
+      --ink-faint: #74897b;
+      --accent: #6fbf97;
+      --accent-strong: #8fd4ae;
+      --accent-contrast: #0c1712;
+      --line: #2b3a31;
+      --paper: #182420;
+      --paper-line: #33453a;
+      --danger: #d98b78;
+      --shadow: 0 20px 45px -25px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #101813;
+    --surface: #16221c;
+    --surface-alt: #1c2a22;
+    --surface-alt-2: #223529;
+    --ink: #e8ede9;
+    --ink-soft: #a7bbac;
+    --ink-faint: #74897b;
+    --accent: #6fbf97;
+    --accent-strong: #8fd4ae;
+    --accent-contrast: #0c1712;
+    --line: #2b3a31;
+    --paper: #182420;
+    --paper-line: #33453a;
+    --danger: #d98b78;
+    --shadow: 0 20px 45px -25px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { text-wrap: balance; }
+
+  .app {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 28px clamp(16px, 3vw, 40px) 80px;
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .masthead .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 4px;
+  }
+
+  .masthead h1 {
+    font-size: clamp(22px, 2.4vw, 30px);
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .masthead p.sub {
+    margin: 6px 0 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    max-width: 52ch;
+  }
+
+  .status-pill {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: minmax(340px, 460px) 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+
+  @media (max-width: 920px) {
+    .workspace { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .form-panel {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    position: sticky;
+    top: 20px;
+    padding: 4px 4px 4px;
+  }
+
+  .form-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 3;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .form-toolbar strong { font-size: 13px; letter-spacing: 0.01em; }
+
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-family: inherit;
+    padding: 2px;
+  }
+  .link-btn:hover { color: var(--danger); }
+
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 16px 18px 6px;
+    display: grid;
+    gap: 12px;
+  }
+
+  fieldset legend {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 0;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  fieldset legend::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  fieldset + fieldset { border-top: 1px solid var(--line); }
+
+  .field { display: grid; gap: 5px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+  label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  label .opt { color: var(--ink-faint); font-weight: 400; }
+
+  input, select, textarea {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13.5px;
+    padding: 9px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--surface-alt);
+    color: var(--ink);
+    width: 100%;
+  }
+
+  select { font-family: "IBM Plex Sans", sans-serif; }
+
+  input::placeholder, textarea::placeholder { color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    background: var(--surface);
+  }
+
+  textarea { resize: vertical; min-height: 44px; font-family: "IBM Plex Sans", sans-serif; }
+
+  .hint { font-size: 11.5px; color: var(--ink-faint); }
+
+  .guarantor-row {
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    display: grid;
+    gap: 8px;
+    position: relative;
+  }
+
+  .guarantor-row .remove-row {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+  .guarantor-row .remove-row:hover { color: var(--danger); }
+
+  .add-row-btn {
+    justify-self: start;
+    background: none;
+    border: 1px dashed var(--line);
+    color: var(--accent);
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 500;
+  }
+  .add-row-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
+
+  .actions-footer {
+    padding: 16px 18px 18px;
+    display: grid;
+    gap: 8px;
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+
+  .btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 11px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary { background: var(--accent); color: var(--accent-contrast); }
+  .btn-primary:hover { background: var(--accent-strong); }
+
+  .btn-ghost { background: var(--surface-alt); color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { background: var(--surface-alt-2); }
+
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .copy-status {
+    font-size: 11.5px;
+    color: var(--accent);
+    text-align: center;
+    min-height: 14px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  /* ---- contract preview ---- */
+  .preview-panel { padding: 0; overflow: hidden; }
+
+  .preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--line);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .paper-frame {
+    background: var(--surface-alt);
+    padding: clamp(14px, 3vw, 40px);
+  }
+
+  .paper {
+    background: var(--paper);
+    color: #23291f;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 64px);
+    font-family: "Source Serif 4", ui-serif, Georgia, serif;
+    font-size: 14.5px;
+    line-height: 1.62;
+    box-shadow: var(--shadow);
+    border-radius: 2px;
+  }
+
+  :root:not([data-theme="light"]) .paper { color: #23291f; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .paper { color: #241f16; }
+  }
+  :root[data-theme="dark"] .paper { color: #241f16; }
+
+  .paper h2.doc-title {
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+    margin: 0 0 26px;
+    line-height: 1.4;
+  }
+
+  .paper h3.party-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--accent-strong);
+    margin: 18px 0 6px;
+  }
+
+  .paper p { margin: 0 0 12px; text-align: justify; }
+
+  .paper h3.clause {
+    font-size: 13.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 26px 0 10px;
+    border-bottom: 1px solid var(--paper-line);
+    padding-bottom: 6px;
+  }
+
+  .paper h4.subarea {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+  }
+
+  .paper .item { margin: 0 0 10px; text-align: justify; }
+  .paper .item-sub { margin: 0 0 10px 18px; text-align: justify; }
+  .paper ul.plan-list { margin: 6px 0 10px; padding-left: 20px; }
+  .paper ul.plan-list li { margin-bottom: 4px; }
+  .paper .note { font-size: 13px; font-style: italic; color: #4a4335; margin: 0 0 12px; }
+  :root[data-theme="dark"] .paper .note,
+  :root:not([data-theme="light"]) .paper .note { color: #4a4335; }
+  .paper .letter-list { margin: 4px 0 14px; padding-left: 4px; }
+  .paper .letter-list p { margin: 0 0 6px; }
+
+  .paper .sign-block { margin-top: 34px; }
+  .paper .sign-line {
+    border-top: 1px solid #23291f;
+    width: 320px;
+    margin: 34px auto 4px;
+  }
+  .paper .sign-name { text-align: center; font-weight: 600; margin: 0; }
+  .paper .sign-role { text-align: center; margin: 0 0 4px; font-size: 13px; }
+
+  .field-value { font-weight: 600; }
+  .field-value.placeholder { font-weight: 400; color: var(--danger); font-style: italic; }
+  :root[data-theme="dark"] .field-value.placeholder,
+  :root:not([data-theme="light"]) .field-value.placeholder { color: #a3432c; }
+
+  .guarantors-block-list p, .guarantors-sign-block { margin: 0; }
+
+  footer.app-footer {
+    max-width: 1400px;
+    margin: 34px auto 0;
+    padding: 0 clamp(16px, 3vw, 40px);
+    color: var(--ink-faint);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  @media print {
+    body { background: #fff; }
+    header.masthead, .form-panel, .preview-toolbar, footer.app-footer { display: none !important; }
+    .app { padding: 0; max-width: none; }
+    .workspace { display: block; }
+    .preview-panel { border: none; box-shadow: none; border-radius: 0; }
+    .paper-frame { background: #fff; padding: 0; }
+    .paper { box-shadow: none; max-width: none; padding: 0; border-radius: 0; }
+  }
+
+  ::selection { background: var(--accent); color: var(--accent-contrast); }
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Silvana AP Bonin Escritório Contábil</p>
+      <h1>Gerador de Contrato de Prestação de Serviços Contábeis</h1>
+      <p class="sub">Preencha os dados do cliente à esquerda — o contrato é montado automaticamente à direita, pronto para impressão ou cópia.</p>
+    </div>
+    <span class="status-pill" id="statusPill">rascunho não iniciado</span>
+  </header>
+
+  <div class="workspace">
+    <!-- FORM -->
+    <form class="panel form-panel" id="contractForm" autocomplete="off">
+      <div class="form-toolbar">
+        <strong>Dados do contrato</strong>
+        <button type="button" class="link-btn" id="clearBtn">limpar tudo</button>
+      </div>
+
+      <fieldset>
+        <legend>Contratante — empresa</legend>
+        <div class="field">
+          <label for="nomeContratante">Razão social</label>
+          <input id="nomeContratante" placeholder="Ex.: Comércio de Alimentos XYZ Ltda">
+        </div>
+        <div class="field">
+          <label for="enderecoContratante">Endereço da sede</label>
+          <textarea id="enderecoContratante" placeholder="Rua, número, bairro — Cidade/UF, CEP"></textarea>
+        </div>
+        <div class="field">
+          <label for="cnpjContratante">CNPJ</label>
+          <input id="cnpjContratante" placeholder="00.000.000/0000-00" inputmode="numeric">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Representante legal</legend>
+        <div class="field">
+          <label for="nomeRepresentante">Nome do sócio administrador</label>
+          <input id="nomeRepresentante" placeholder="Nome completo">
+        </div>
+        <div class="field">
+          <label for="cpfRepresentante">CPF do representante</label>
+          <input id="cpfRepresentante" placeholder="000.000.000-00" inputmode="numeric">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Datas</legend>
+        <div class="field-row">
+          <div class="field">
+            <label for="dataAssinatura">Data da assinatura</label>
+            <input id="dataAssinatura" type="date">
+          </div>
+          <div class="field">
+            <label for="inicioVigencia">Início dos serviços</label>
+            <input id="inicioVigencia" type="date">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Plano de honorários</legend>
+        <div class="field-row">
+          <div class="field">
+            <label for="planoNome">Nome do plano</label>
+            <input id="planoNome" placeholder="Ex.: Essencial">
+          </div>
+          <div class="field">
+            <label for="planoAno">Ano</label>
+            <input id="planoAno" placeholder="2026" inputmode="numeric" maxlength="4">
+          </div>
+        </div>
+        <div class="field">
+          <label for="valorMensalidade">Mensalidade (R$)</label>
+          <input id="valorMensalidade" placeholder="0,00" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="faixaFaturamento">Faturamento mensal até</label>
+          <input id="faixaFaturamento" placeholder="Ex.: R$ 30.000,00">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="numProLabores">Pró-labores inclusos</label>
+            <input id="numProLabores" placeholder="1" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="numFuncionarios">Funcionários inclusos</label>
+            <input id="numFuncionarios" placeholder="0" inputmode="numeric">
+          </div>
+        </div>
+        <div class="field">
+          <label for="regimeTributario">Regime tributário</label>
+          <select id="regimeTributario">
+            <option value="">Selecione…</option>
+            <option>Simples Nacional</option>
+            <option>Lucro Presumido</option>
+            <option>Lucro Real</option>
+            <option>MEI</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="diaVencimento">Dia do vencimento</label>
+            <input id="diaVencimento" placeholder="10" inputmode="numeric" maxlength="2">
+          </div>
+          <div class="field">
+            <label for="formaPagamento">Forma de pagamento</label>
+            <select id="formaPagamento">
+              <option value="">Selecione…</option>
+              <option>Boleto bancário</option>
+              <option>PIX</option>
+              <option>Transferência bancária (TED/DOC)</option>
+              <option>Débito automático</option>
+              <option>Boleto ou PIX</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Avalistas / fiadores (sócios)</legend>
+        <div id="guarantorsList" style="display:grid; gap:8px;"></div>
+        <button type="button" class="add-row-btn" id="addGuarantorBtn">+ adicionar avalista</button>
+        <p class="hint">Sócio(s) que assinam como fiadores solidários das obrigações do contratante (cláusula oitava).</p>
+      </fieldset>
+
+      <div class="actions-footer">
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" id="printBtn">Imprimir / salvar PDF</button>
+          <button type="button" class="btn btn-primary" id="copyBtn">Copiar texto</button>
+        </div>
+        <p class="copy-status" id="copyStatus"></p>
+      </div>
+    </form>
+
+    <!-- PREVIEW -->
+    <div class="panel preview-panel">
+      <div class="preview-toolbar">
+        <span>pré-visualização — atualiza em tempo real</span>
+        <span id="previewMeta">A4 · Jundiaí/SP</span>
+      </div>
+      <div class="paper-frame">
+        <article class="paper" id="contractPaper">
+
+          <h2 class="doc-title">Instrumento Particular de Contrato de Prestação de Serviços Profissionais Contábeis</h2>
+
+          <h3 class="party-label">Contratada:</h3>
+          <p>SILVANA AP BONIN ESCRITORIO CONTABIL ME, CNPJ. nº. 15.773.207/0001-76, estabelecida na Rua Pandiá Calógeras, nº 152 - Vila Argos Nova - Jundiaí/SP - 13201-580, representada por seu sócio/administrador, Silvana Aparecida Bonin, contabilista, portadora da cédula de identidade RG. nº. 17.114.946-4 - SSP/SP e do CPF. nº. 068.352.118-73 e CRC.1SP220562/O-7.</p>
+
+          <h3 class="party-label">Contratante:</h3>
+          <p><span class="field-value placeholder" data-field="nomeContratante">[NOME DO CONTRATANTE]</span>, com sede na <span class="field-value placeholder" data-field="enderecoContratante">[ENDEREÇO DO CONTRATANTE]</span>; CNPJ nº <span class="field-value placeholder" data-field="cnpjContratante">[CNPJ DO CONTRATANTE]</span>, representada pelo sócio administrador: <span class="field-value placeholder" data-field="nomeRepresentante">[NOME DO REPRESENTANTE]</span> e inscrito no CPF/MF nº <span class="field-value placeholder" data-field="cpfRepresentante">[CPF DO REPRESENTANTE]</span>.</p>
+
+          <p>Pelo presente instrumento particular, as partes acima, devidamente qualificadas, doravante denominadas, simplesmente, CONTRATADA e CONTRATANTE, na melhor forma de direito, ajustam e contratam a prestação de serviços profissionais, segundo as cláusulas e condições adiante arroladas.</p>
+
+          <h3 class="clause">Cláusula Primeira – Do Objeto</h3>
+          <p>O objeto do presente consiste na prestação pela CONTRATADA à CONTRATANTE, a partir de <span class="field-value placeholder" data-field="inicioVigencia">[INÍCIO DA VIGÊNCIA]</span>, dos seguintes serviços profissionais:</p>
+
+          <h4 class="subarea">1.1. Área Contábil</h4>
+          <p class="item">1.1.1. Classificação e escrituração da Contabilidade de acordo com as normas e princípios contábeis vigentes.</p>
+          <p class="item">1.1.2. Apuração de balancetes.</p>
+          <p class="item">1.1.3. Balanço Anual e Demonstrações Contábeis.</p>
+
+          <h4 class="subarea">1.2. Área Fiscal</h4>
+          <p class="item">1.2.1. Orientação e controle da aplicação dos dispositivos legais vigentes. Sejam federais, estaduais ou municipais.</p>
+          <p class="item">1.2.2. Escrituração dos registros fiscais do IPI, ICMS, ISS (com transição para IBS e CBS) e elaboração das guias de informação e de recolhimento dos tributos devidos.</p>
+          <p class="item">1.2.3. Orientação para a correta adequação da Reforma Tributária.</p>
+
+          <h4 class="subarea">1.3. Área do Imposto de Renda Pessoa Jurídica</h4>
+          <p class="item">1.3.1. Orientação e controle de aplicação dos dispositivos legais vigentes.</p>
+          <p class="item">1.3.2. Elaboração da declaração anual de rendimentos e documentos correlatos.</p>
+
+          <h4 class="subarea">1.4. Área Trabalhista e Previdenciária</h4>
+          <p class="item">1.4.1. Orientação e controle da aplicação dos preceitos da Consolidação das Leis do Trabalho, bem como aqueles atinentes à Previdência Social, PIS, FGTS e outros aplicáveis às relações de emprego mantidas pela CONTRATANTE.</p>
+          <p class="item">1.4.2. Manutenção dos Registros de Empregados e serviços correlatos.</p>
+          <p class="item">1.4.3. Elaboração da Folha de Pagamento dos empregados e de Pró-Labore, bem como das guias de recolhimento dos encargos sociais e tributos afins.</p>
+
+          <h3 class="clause">Cláusula Segunda – Das Condições de Execução dos Serviços</h3>
+          <p>Os serviços serão executados nas dependências da CONTRATADA, em obediência às seguintes condições:</p>
+
+          <p class="item">2.1. A documentação indispensável para o desempenho dos serviços arrolados na Cláusula Primeira será fornecida pela CONTRATANTE, consistindo, basicamente, em:</p>
+          <p class="item-sub">2.1.1. Boletim de caixa e documentos nele constantes.</p>
+          <p class="item-sub">2.1.2. Extratos de todas as contas correntes bancárias, inclusive aplicações; e documentos relativos aos lançamentos, tais como depósitos, cópias de cheques, borderôs de cobrança, descontos, contratos de crédito, avisos de créditos, débitos, etc.</p>
+          <p class="item-sub">2.1.3. Notas fiscais de compra (entradas) e de venda (saídas), bem como comunicação de seu eventual cancelamento, Notas Fiscais de Serviços Tomados.</p>
+          <p class="item-sub">2.1.4. Controle de frequência dos empregados e eventual comunicação para concessão de férias, admissão ou rescisão contratual, bem como correções salariais espontâneas.</p>
+
+          <p class="item">2.2. A documentação deverá ser enviada pela CONTRATANTE de forma completa e em boa ordem nos seguintes prazos:</p>
+          <p class="item-sub">2.2.1. Até 5 (cinco) dias após o encerramento do mês, os documentos relacionados nos itens 2.1.1 e 2.1.2, acima.</p>
+          <p class="item-sub">2.2.2. Até 5 (cinco) dias após o encerramento do mês, os documentos mencionados no item 2.1.3 acima, em formato solicitado pela CONTRATADA (por exemplo xml).</p>
+          <p class="item-sub">2.2.3. Até o dia 25 do mês de referência quando se tratar dos documentos do item 2.1.4, para elaboração da folha de pagamento;</p>
+          <p class="item-sub">2.2.4. No mínimo, 48 (quarenta e oito) horas antes da comunicação para dação de aviso de férias e aviso prévio de rescisão contratual de empregados acompanhada do Registro de Empregados.</p>
+
+          <p class="item">2.3. A CONTRATADA compromete-se a cumprir todos os prazos estabelecidos na legislação de regência quanto aos serviços contratados, especificando-se, porém, os prazos abaixo:</p>
+          <p class="item-sub">2.3.1. A entrega das guias de recolhimento de tributos e encargos trabalhistas à CONTRATANTE far-se-á com antecedência de 2 (dois) dias do vencimento da obrigação.</p>
+          <p class="item-sub">2.3.2. A entrega da Folha de Pagamento, recibos de pagamento salarial, de férias e demais obrigações trabalhistas far-se-á até 72 (setenta e duas) horas após o recebimento dos documentos mencionados no item 2.1.4.</p>
+          <p class="item-sub">2.3.3. A entrega do Balancete será realizada em prazo estimado, preferencialmente até o dia 30 do terceiro mês subsequente ao período de referência, desde que todas as informações e documentos necessários tenham sido fornecidos pela CONTRATANTE de forma completa, correta e tempestiva.</p>
+          <p class="item-sub">2.3.4. A entrega do Balanço Anual ocorrerá em prazo estimado, preferencialmente, até 120 (cento e vinte) dias, contados a partir do efetivo recebimento, pela CONTRATADA, de toda a documentação necessária à sua elaboração, incluindo o Inventário Anual de Estoques, devidamente conferido e formalizado por escrito, cuja responsabilidade é exclusiva da CONTRATANTE.</p>
+          <p class="note">Parágrafo único. Eventuais atrasos decorrentes da não entrega, entrega parcial ou inconsistência das informações fornecidas pela CONTRATANTE ensejará a prorrogação automática dos prazos, sem caracterizar descumprimento contratual por parte da CONTRATADA.</p>
+
+          <p class="item">2.4. A remessa de documentos entre os contratantes deverá ser feita no formato digital através de arquivos em PDF, OFX ou EXCEL. Não recebemos documentos físicos por questões de controle e segurança.</p>
+
+          <p class="item">2.5. No que toca aos dados, a CONTRATADA possui processos internos de governança para a proteção dos dados eventualmente armazenados em razão da execução e utilização em seus negócios relacionados aos serviços contratados, devendo a CONTRATANTE observar a LGPD e as premissas de governança com seus colaboradores e prestadores de serviços regularmente aceitas no tratamento dos dados obtidos.</p>
+          <p class="item-sub">2.5.1. As Partes declaram-se cientes dos direitos, obrigações e penalidades aplicáveis constantes da Lei Geral de Proteção de Dados Pessoais (Lei 13.709/2018) (“LGPD”), e obrigam-se a adotar todas as medidas razoáveis para garantir, por si, bem como seu pessoal, colaboradores, empregados e subcontratados que utilizem os Dados Protegidos na extensão autorizada na referida LGPD.</p>
+
+          <h3 class="clause">Cláusula Terceira – Dos Deveres da Contratada</h3>
+          <p class="item">3.1. A CONTRATADA desempenhará os serviços enumerados na Cláusula Primeira com todo zelo, diligência e honestidade, observada a legislação vigente, resguardando os interesses da CONTRATANTE, sem prejuízo da dignidade e independência profissionais, sujeitando-se, ainda, às normas do Código de Ética Profissional do Contabilista, aprovado pela Resolução n° 803-96 do Conselho Federal de Contabilidade.</p>
+
+          <p class="item">3.2. Responsabilizar-se-á a CONTRATADA por todos os prepostos que atuarem nos serviços ora contratados, indenizando à CONTRATANTE, em caso de culpa ou dolo.</p>
+          <p class="item-sub">3.2.1. A CONTRATADA somente poderá ser responsabilizada por eventuais multas, penalidades ou encargos de natureza fiscal, tributária, trabalhista ou previdenciária quando comprovadamente decorrentes de erro técnico, dolo ou culpa grave, exclusivamente imputáveis à sua atuação profissional, após o esgotamento das instâncias administrativas de defesa, sempre observado o cumprimento, pela CONTRATANTE, de todas as suas obrigações contratuais, especialmente quanto à veracidade das informações prestadas e à observância dos prazos estabelecidos neste contrato.</p>
+
+          <p class="item">3.3. Obriga-se a CONTRATADA a fornecer à CONTRATANTE, no escritório dessa e dentro do horário normal de expediente, todas as informações relativas ao andamento dos serviços ora contratados.</p>
+
+          <p class="item">3.4. Responsabilizar-se-á a CONTRATADA por todos os documentos a ela entregues pela CONTRATANTE, enquanto permanecerem sob sua guarda para a consecução dos serviços pactuados, respondendo pelo seu mau uso, perda, extravio ou inutilização, salvo comprovado caso fortuito ou força maior, mesmo se tal ocorrer por ação ou omissão de seus prepostos ou quaisquer pessoas que a eles tenham acesso.</p>
+
+          <p class="item">3.5. Fica expressamente afastada qualquer responsabilidade da CONTRATADA por penalidades e consequências decorrentes de informações, declarações ou documentação inidôneas, incorretas, incompletas ou entregues fora dos prazos estabelecidos, que lhe forem apresentadas, bem como por omissões próprias da CONTRATANTE ou resultantes do descumprimento, atraso ou desrespeito às orientações e prazos expressamente comunicados pela CONTRATADA.</p>
+
+          <p class="item">3.6. A CONTRATADA manterá todas as informações da CONTRATANTE salvas em servidor físico e/ou servidores remotos, guardando o mais completo e absoluto sigilo sobre as informações e dados da CONTRATANTE a que tiver acesso em razão da presente prestação de serviços, utilizando-as apenas quando estritamente necessário para a prestação dos serviços acordados em contrato, em conformidade com a Lei Geral da Proteção dos Dados - LGPD (Lei 13.709 – 14/08/2018), ou nos casos que seguem:</p>
+          <div class="letter-list">
+            <p>a) Mediante o fornecimento de consentimento pelo titular;</p>
+            <p>b) Para o cumprimento de obrigação legal ou regulatória;</p>
+            <p>c) Para atender ordem judicial;</p>
+            <p>d) Pela administração pública, para o tratamento e uso compartilhado de dados necessários à execução de políticas públicas previstas em leis e regulamentos ou respaldadas em contratos, convênios ou instrumentos congêneres;</p>
+            <p>e) Para a realização de estudos por órgão de pesquisa, garantida, sempre que possível, a anonimização dos dados pessoais;</p>
+            <p>f) Para a proteção da vida ou da incolumidade física do titular ou de terceiros;</p>
+            <p>g) Para a tutela da saúde, exclusivamente, em procedimento realizado por profissionais de saúde, serviços de saúde ou autoridade sanitária;</p>
+            <p>h) Para a proteção do crédito, quando disposto na legislação pertinente (inclusive o disposto na Lei 9.613/98 e Resolução 1445/13 do CFC);</p>
+            <p>i) Transferência a terceiro, respeitados os requisitos de tratamento de dados dispostos na LGPD.</p>
+          </div>
+          <p class="item-sub">3.6.1. A CONTRATANTE tem direito ao acesso às informações sobre o tratamento de seus dados, que serão disponibilizadas de forma clara, adequada e ostensiva, mediante solicitação.</p>
+          <p class="item-sub">3.6.2. A CONTRATADA não será responsável perante a CONTRATANTE quando proceder com o desenvolvimento em cumprimento às premissas da LGPD e após a entrega, seja constatado que uma prática de mercado amplamente adotada teria violado a LGPD, a partir de entendimentos judiciais ou administrativos até o presente momento inexistentes.</p>
+
+          <p class="item">3.7. A CONTRATADA compromete-se a prestar atendimento à CONTRATANTE durante o horário de expediente, de segunda a sexta-feira, das 8h às 11h45 e das 13h às 17h, excetuados feriados nacionais, estaduais, municipais e eventuais emendas, por meio de telefone, e-mail e WhatsApp oficiais da CONTRATADA.</p>
+          <p class="item-sub">3.7.1. O atendimento presencial, quando necessário, deverá ser previamente agendado pela CONTRATANTE com antecedência mínima de 24 (vinte e quatro) horas, estando sujeito à disponibilidade de agenda da CONTRATADA e a incidência da cobrança de hora técnica.</p>
+
+          <h3 class="clause">Cláusula Quarta – Dos Deveres da Contratante</h3>
+          <p class="item">4.1. Obriga-se a CONTRATANTE a fornecer à CONTRATADA todos os dados, documentos e informações que se façam necessários ao bom desempenho dos serviços ora contratados, em tempo hábil; nenhuma responsabilidade caberá à segunda caso recebidos intempestivamente.</p>
+
+          <p class="item">4.2. Para a execução dos serviços constantes da Cláusula Primeira, a CONTRATANTE pagará à CONTRATADA, os honorários profissionais de acordo com o plano:</p>
+
+          <h4 class="subarea">Honorários da Contabilidade</h4>
+          <p><strong>Plano <span class="field-value placeholder" data-field="planoNome">[PLANO]</span> <span class="field-value placeholder" data-field="planoAno">[ANO]</span> — Mensalidade <span class="field-value placeholder" data-field="valorMensalidade">[VALOR]</span></strong></p>
+          <ul class="plan-list">
+            <li>Faturamento mensal até <span class="field-value placeholder" data-field="faixaFaturamento">[FAIXA DE FATURAMENTO]</span>;</li>
+            <li>Contabilidade Completa;</li>
+            <li>Pró-labore para até <span class="field-value placeholder" data-field="numProLabores">[Nº PRÓ-LABORES]</span> sócio(s);</li>
+            <li>Atendimento via WhatsApp e e-mail;</li>
+            <li>Folha de pagamento de até <span class="field-value placeholder" data-field="numFuncionarios">[Nº FUNCIONÁRIOS]</span> Funcionários Registrados;</li>
+            <li>Regime tributário: <span class="field-value placeholder" data-field="regimeTributario">[REGIME TRIBUTÁRIO]</span>;</li>
+          </ul>
+          <p class="note">*Se houver retirada de pró-labore adicional, será acrescido o valor de R$ 55,00 por sócio e acrescido R$ 65,00 por funcionário registrado acima do acordado.</p>
+
+          <p>Os honorários serão pagos no dia <span class="field-value placeholder" data-field="diaVencimento">[DIA DO VENCIMENTO]</span> do mês subsequente de competência por meio de <span class="field-value placeholder" data-field="formaPagamento">[FORMA DE PAGAMENTO]</span> (enviado no e-mail informado pela CONTRATANTE).</p>
+
+          <h4 class="subarea">Reajuste dos Honorários por Renegociação</h4>
+          <p class="item">4.2.1. Fica estabelecido que, a qualquer tempo, em caso de alterações significativas ou imprevisíveis na demanda de trabalho, no volume de obrigações acessórias, na complexidade operacional ou em decorrência de mudanças relevantes na legislação que impactem diretamente a prestação dos serviços, bem como quando houver modificação das condições originalmente negociadas, tais como, exemplificativamente, alteração da faixa de faturamento, aumento ou redução do número de sócios, funcionários ou colaboradores, mudança de regime tributário ou de enquadramento fiscal, a CONTRATADA poderá propor a renegociação dos honorários.</p>
+          <p>A renegociação, se aceita pela CONTRATANTE, será formalizada por meio de aditivo contratual, não se caracterizando tal ajuste como reajuste automático.</p>
+          <p class="item-sub">4.2.1.1. Além da parcela acima avençada, a CONTRATANTE pagará à CONTRATADA uma adicional, anual, correspondente ao valor de 50% (cinquenta por cento) de uma parcela mensal, para atendimento ao acréscimo de serviços e encargos próprios do período final do exercício, tais como o Encerramento das demonstrações contábeis anuais, Declaração de Rendimentos da Pessoa Jurídica, Elaboração de informes de rendimento, e Folhas de Pagamento do 13° Salário.</p>
+          <p class="item-sub">4.2.1.2. A mensalidade adicional mencionada no item anterior será paga uma parcela vencível no dia 15 de dezembro de cada exercício, e seu valor será equivalente a 50% (cinquenta por cento) do honorário vigente no mês de pagamento.</p>
+          <p class="item-sub">4.2.1.3. Mesmo no caso de início do contrato em qualquer mês do exercício, a parcela adicional será devida integralmente.</p>
+          <p class="item-sub">4.2.1.4. Caso o presente envolva a recuperação de serviços não-realizados – atrasados – a mensalidade adicional será, integralmente, devida desde o primeiro mês de atualização.</p>
+          <p class="item">4.2.2. Os honorários pagos após a data avençada no item 4.2. acarretarão à CONTRATANTE o acréscimo de multa de 05% (cinco por cento), sem prejuízo de juros moratórios de 1% (um por cento) ao mês ou fração.</p>
+          <p class="item">4.2.3. Os honorários serão reajustados anualmente, no mês de competência de janeiro, de forma automática, pela variação acumulada do IGP-M/FGV no período de 12 (doze) meses imediatamente anteriores ao reajuste, assegurado o reajuste mínimo de 10% (dez por cento), aplicando-se o que for maior.</p>
+          <p class="item">4.2.4. O percentual de reajuste anual previsto no item 4.2.3 incidirá sobre o valor resultante da aplicação do critério de revisão conforme item 4.2.</p>
+
+          <p class="item">4.3. A CONTRATANTE reembolsará à CONTRATADA o custo de todos os materiais utilizados na execução dos serviços ora ajustados, tais como formulários contínuos, impressos fiscais, trabalhistas e contábeis, bem como livros fiscais, pastas, cópias reprográficas, autenticações, reconhecimento de firmas, custas, emolumentos e taxas exigidos pelos serviços públicos, sempre que utilizados e mediante recibo discriminado, acompanhado dos respectivos comprovantes de desembolso.</p>
+
+          <p class="item">4.4. Os serviços solicitados pela CONTRATANTE não-especificados na Cláusula Primeira serão cobrados pela CONTRATADA em apartado, como extraordinários, segundo valor específico constante de orçamento previamente aprovado pela primeira, englobando nessa previsão toda e qualquer inovação da legislação relativamente ao regime tributário, trabalhista ou previdenciário.</p>
+          <p class="item-sub">4.4.1. São considerados serviços extraordinários ou para contábeis, exemplificativamente: 1) alteração contratual; 2) abertura de empresa; 3) certidões negativas do INSS, FGTS, Federais, ICMS e ISS; 4) Certidão negativa de falências ou protestos; 5) Homologação na DRT; 6) Autenticação/Registro de Livros; 7) Encadernação de livros; 8) Declaração e ajuste do imposto de renda pessoa física; 9) Preenchimento de fichas cadastrais/IBGE; 10) DAS-N; 11) ECD; 12) ECF; 13) DIRF; 14) DIMED; 15) DIMOB; 16) GCAP; 17) REINF e outros que vierem a ser instituídos e necessários.</p>
+
+          <p class="item">4.5. Havendo inadimplência, a CONTRATADA poderá encaminhar o nome do CONTRATANTE e de seus sócios para cadastro nos órgãos de proteção ao crédito bem como autorizar que a instituição bancária encarregada da cobrança leve a protesto o título de crédito correspondente à parcela inadimplida, obedecidas as determinações legais.</p>
+          <p class="item-sub">4.5.1. O inadimplemento de quaisquer obrigações pecuniárias assumidas pela CONTRATANTE neste contrato importará em confissão irrevogável e irretratável de dívida, líquida, certa e exigível, constituindo o presente instrumento título executivo extrajudicial, nos termos do artigo 784, inciso III, do Código de Processo Civil, autorizando a CONTRATADA a promover a imediata execução judicial do débito, acrescido de honorários, multas, juros, correção monetária, encargos moratórios, custas judiciais e extrajudiciais, independentemente de aviso prévio, notificação ou interpelação judicial.</p>
+
+          <p class="item">4.6. A CONTRATANTE fica expressamente proibida de entrar em contato direto com colaboradores, prepostos ou representantes da CONTRATADA por meio de canais de comunicação não oficiais, bem como fora dos horários de expediente previamente estabelecidos, devendo toda e qualquer comunicação ocorrer exclusivamente pelos meios oficiais da CONTRATADA.</p>
+
+          <p class="item">4.7. Toda e qualquer comunicação realizada fora do horário de expediente e/ou por meio de contato pessoal dos responsáveis da CONTRATADA, quando atendida, ensejará a cobrança, pela CONTRATADA, do valor correspondente à hora técnica efetivamente despendida no atendimento, a ser suportado pela CONTRATANTE.</p>
+
+          <h3 class="clause">Cláusula Quinta – Da Vigência e Rescisão</h3>
+          <p class="item">5.1. O presente contrato vigorará por tempo indeterminado, a contar da data da assinatura deste contrato, decorrente dos valores e condições especiais concedidos nas propostas.</p>
+          <p class="item-sub">5.1.1. A CONTRATANTE poderá rescindir o presente contrato a qualquer tempo, sob notificação escrita prévia de 60 (sessenta) dias. A não notificação escrita no prazo estipulado incidirá em multa contratual equivalente ao valor da mensalidade vigente na época.</p>
+
+          <p class="item">5.2. Ocorrendo a transferência dos serviços para outra Empresa Contábil ou Contabilista, a CONTRATANTE deverá informar à CONTRATADA, por escrito, seu nome, endereço, nome do responsável e número da inscrição no Conselho Regional de Contabilidade. Sem os dados não será possível à CONTRATADA cumprir as formalidades fiscais e ético-profissionais, inclusive a transmissão de dados e informações necessárias à continuidade dos serviços, em relação às quais, diante da eventual inércia da CONTRATANTE, estará desobrigada de cumprimento.</p>
+          <p class="item-sub">5.2.1. Entre os dados e informações a serem fornecidos não se incluem detalhes técnicos dos sistemas de informática da CONTRATADA, os quais são de sua exclusiva propriedade.</p>
+
+          <p class="item">5.3. A falta de pagamento de 2 (duas) parcelas de honorários faculta à CONTRATADA suspender, imediatamente, a execução dos serviços ora pactuados, bem como considerar, rescindido o presente, independentemente de notificação judicial ou extrajudicial, sem prejuízo do previsto no item 4.2.2, mediante notificação prévia da suspensão.</p>
+
+          <p class="item">5.4. A falência da CONTRATANTE facultará a rescisão do presente pela CONTRATADA, independentemente de notificação judicial ou extrajudicial, não estando incluídos nos serviços ora pactuados a elaboração das peças contábeis arroladas nos artigos 51 e 105 da Lei nº 11.101-05 e demais decorrentes.</p>
+
+          <p class="item">5.5. A CONTRATADA poderá rescindir o presente contrato de forma imediata e independentemente de aviso prévio, caso sejam constatadas situações que não estejam em conformidade com a legalidade, tais como, mas não se limitando a, condutas de sonegação fiscal, ausência de documentos legais hábeis, execução de atividades ilícitas, bem como a constatação de documentos adulterados ou falsos.</p>
+          <p class="item-sub">5.5.1. Fica expressamente estabelecido que, nessas hipóteses, toda e qualquer responsabilidade, bem como suas consequências administrativas, civis, fiscais e penais perante órgãos governamentais e terceiros, serão de inteira e exclusiva responsabilidade da CONTRATANTE, isentando a CONTRATADA de qualquer ônus ou corresponsabilidade.</p>
+
+          <p class="item">5.6. Considerar-se-á rescindido o presente contrato, independentemente de notificação judicial ou extrajudicial, caso qualquer das partes CONTRATANTES venha a infringir cláusula ora convencionada.</p>
+          <p class="item-sub">5.6.1. Fica estipulada a multa contratual de uma parcela mensal vigente relativa aos honorários, exigível por inteiro em face da parte que der causa à rescisão motivada, sem prejuízo da penalidade específica do item 4.2.2., se o caso.</p>
+
+          <h3 class="clause">Cláusula Sexta – Não Aliciamento de Colaboradores</h3>
+          <p>Durante a vigência deste contrato e pelo prazo de 1 (um) ano após o seu término, a CONTRATANTE e a CONTRATADA comprometem-se a não aliciar, induzir ou estimular a contratação, de forma direta ou indireta, inclusive por intermédio de terceiros, de empregados ou colaboradores que pertençam ou tenham pertencido à outra parte nos últimos 6 (seis) meses, desde que tais profissionais tenham atuado diretamente na execução do objeto deste contrato e que o desligamento não tenha ocorrido por justa causa, para o exercício de função ou atividades correlatas às anteriormente desempenhadas, salvo mediante consentimento prévio e expresso, por escrito, da parte contrária.</p>
+          <p>O descumprimento desta cláusula sujeitará a parte infratora ao pagamento de multa equivalente a 6 (seis) honorários mensais vigentes à época da infração, sem prejuízo da apuração de eventuais perdas e danos, se comprovados.</p>
+
+          <h3 class="clause">Cláusula Sétima – Confidencialidade</h3>
+          <p>As partes, por si, seus sócios, dirigentes, empregados, prepostos ou representantes, obrigam-se a manter, durante a vigência deste contrato e mesmo após o seu término, absoluto sigilo e confidencialidade sobre toda e qualquer informação, dado, documento ou conhecimento técnico, comercial, estratégico ou operacional a que tiverem acesso em razão deste contrato, comprometendo-se a não divulgar, revelar, reproduzir ou fornecer tais informações a terceiros, salvo mediante autorização prévia e expressa, por escrito, da outra parte ou por determinação legal ou judicial.</p>
+          <p>A obrigação de confidencialidade permanecerá válida por prazo indeterminado, enquanto as informações não se tornarem públicas por meio legítimo e sem violação deste instrumento.</p>
+
+          <h3 class="clause">Cláusula Oitava – Do Avalista/Responsabilidade Solidária dos Sócios</h3>
+          <p>Os sócios da CONTRATANTE, devidamente qualificados abaixo, assinam o presente contrato na qualidade de AVALISTAS e FIADORES das obrigações assumidas pela CONTRATANTE, tornando-se solidários e ilimitadamente responsáveis pelo integral cumprimento de todas as obrigações financeiras, contratuais e indenizatórias decorrentes deste instrumento, inclusive honorários, multas, encargos moratórios, despesas de cobrança, custas judiciais e extrajudiciais.</p>
+          <p>Sócio(s):</p>
+          <div class="guarantors-block-list" id="guarantorsClauseList"></div>
+          <p>Fica expressamente estabelecido que, na hipótese de o presente instrumento substituir ou suceder contrato anteriormente firmado entre as partes, os sócios signatários também responderão, na mesma qualidade e extensão, por eventuais débitos, obrigações ou valores pendentes existentes até a data da assinatura deste contrato, independentemente de sua origem, permanecendo tais responsabilidades plenamente exigíveis pela CONTRATADA.</p>
+
+          <h3 class="clause">Cláusula Nona – Da Procuração Eletrônica</h3>
+          <p>A CONTRATANTE, durante a vigência do presente contrato, obriga-se a outorgar e manter ativa a procuração eletrônica em favor da CONTRATADA. Referido ato será pelo site eletrônico “gov.br”, conferindo-lhe poderes suficientes para o acesso às informações e documentos necessários à adequada prestação dos serviços contratados.</p>
+          <p>A não outorga, a falta de manutenção ou a revogação antecipada e imotivada da referida procuração, sem a correspondente rescisão contratual ou aviso prévio à CONTRATADA, poderá gerar prejuízos, como atraso ou limitação na condução das demandas, comprometendo a atuação plena da CONTRATADA. Assim, referidas consequências não poderão ser imputadas à CONTRATADA.</p>
+          <p>Além disso, a CONTRATANTE se compromete em atualizar e manter o “Nível PRATA” de acesso ao site “gov.br”, pois se trata de uma condição da procuração eletrônica.</p>
+
+          <h3 class="clause">Cláusula Décima – Do Foro</h3>
+          <p>Fica eleito o Foro da Cidade de Jundiaí/SP, com expressa renúncia a qualquer outro, por mais privilegiado que seja, para dirimir as questões oriundas da interpretação e execução do presente contrato, ou da cláusula compromissória (onde houver juízo arbitral). Os CONTRATANTES submeterão à arbitragem eventuais litígios oriundos do presente contrato. (Lei nº 9.307-96).</p>
+
+          <p style="margin-top:28px;">Jundiaí, <span class="field-value placeholder" data-field="dataAssinatura">[DATA]</span>.</p>
+
+          <div class="sign-block">
+            <div class="sign-line"></div>
+            <p class="sign-name">SILVANA AP BONIN ESCRITORIO CONTABIL ME</p>
+            <p class="sign-role">Silvana Aparecida Bonin – CPF: 068.352.118-73</p>
+          </div>
+
+          <div class="sign-block">
+            <div class="sign-line"></div>
+            <p class="sign-name"><span class="field-value placeholder" data-field="nomeContratante">[NOME DO CONTRATANTE]</span></p>
+            <p class="sign-role">CNPJ: <span class="field-value placeholder" data-field="cnpjContratante">[CNPJ DO CONTRATANTE]</span></p>
+            <p class="sign-role"><span class="field-value placeholder" data-field="nomeRepresentante">[NOME DO REPRESENTANTE]</span> – CPF: <span class="field-value placeholder" data-field="cpfRepresentante">[CPF DO REPRESENTANTE]</span></p>
+          </div>
+
+          <p style="margin-top:24px;">Avalistas e Fiadores:</p>
+          <div id="guarantorsSignBlock"></div>
+
+          <p style="margin-top:24px;">Testemunhas:</p>
+          <div class="sign-block">
+            <div class="sign-line"></div>
+            <p class="sign-role">Matheus Castro Magalhães – CPF: 411.220.068-45</p>
+          </div>
+          <div class="sign-block">
+            <div class="sign-line"></div>
+            <p class="sign-role">Thatiane de Lima Uyeno – CPF: 356.685.738-69</p>
+          </div>
+
+          <div style="page-break-before: always; margin-top: 40px; padding-top: 28px; border-top: 1px dashed var(--paper-line);">
+            <p>De: <span class="field-value placeholder" data-field="nomeRepresentante">[NOME DO REPRESENTANTE]</span><br>CPF/MF nº. <span class="field-value placeholder" data-field="cpfRepresentante">[CPF DO REPRESENTANTE]</span></p>
+            <p>Para: SILVANA AP BONIN ESCRITORIO CONTABIL ME<br>CNPJ: 15.773.207/0001-76</p>
+            <p>Prezados Senhores,</p>
+            <p>Declaro para os devidos fins, como administrador e responsável legal da empresa, que todas informações fornecidas a Vossas Senhorias para escrituração e elaboração das demonstrações contábeis, obrigações acessórias, apuração de tributos e arquivos eletrônicos exigidos pela fiscalização federal, estadual, municipal, trabalhista e previdenciária são fidedignas.</p>
+            <p>Também declaramos:</p>
+            <div class="letter-list">
+              <p>a) Que os controles internos adotados pela nossa empresa são de responsabilidade da administração e estão adequados ao tipo de atividade e volume de transações;</p>
+              <p>b) Que não realizamos nenhum tipo de operação que possa ser considerada ilegal, frente à legislação vigente;</p>
+              <p>c) Que todos os documentos e/ou informações que geramos e recebemos de nossos fornecedores, encaminhados para a elaboração da escrituração contábil e demais serviços contratados, estão revestidos de total idoneidade e que a falta de entrega desses documentos impossibilita o levantamento de balancetes e balanços;</p>
+              <p>d) Que é nossa responsabilidade o levantamento e contagem do estoque da empresa e o envio da planilha de controle contábil preenchida ou Relatório Gerencial para a contabilidade.</p>
+              <p>e) Que não existem quaisquer fatos, como adulterações, violações de leis, documentos não enviados, normas e regulamentos, que afetam ou possam afetar as demonstrações contábeis, ou, ainda, a continuidade das operações da empresa.</p>
+            </div>
+            <p>Atenciosamente,</p>
+            <div class="sign-block">
+              <div class="sign-line"></div>
+              <p class="sign-name"><span class="field-value placeholder" data-field="nomeContratante">[NOME DO CONTRATANTE]</span></p>
+              <p class="sign-role">CNPJ: <span class="field-value placeholder" data-field="cnpjContratante">[CNPJ DO CONTRATANTE]</span></p>
+              <p class="sign-role"><span class="field-value placeholder" data-field="nomeRepresentante">[NOME DO REPRESENTANTE]</span> – CPF: <span class="field-value placeholder" data-field="cpfRepresentante">[CPF DO REPRESENTANTE]</span></p>
+            </div>
+          </div>
+
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <span>Uso interno — Silvana AP Bonin Escritório Contábil ME.</span>
+    <span>Os campos preenchidos ficam salvos neste navegador até você limpar o formulário.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "contrato-contabil-rascunho-v1";
+
+  var FIELDS = ["nomeContratante","enderecoContratante","cnpjContratante","nomeRepresentante","cpfRepresentante",
+    "dataAssinatura","inicioVigencia","planoNome","planoAno","valorMensalidade","faixaFaturamento",
+    "numProLabores","numFuncionarios","regimeTributario","diaVencimento","formaPagamento"];
+
+  var MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+
+  function formatDateExtenso(iso) {
+    if (!iso) return "";
+    var parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    var y = parts[0], m = parseInt(parts[1], 10) - 1, d = parseInt(parts[2], 10);
+    if (m < 0 || m > 11) return iso;
+    return d + " de " + MESES[m] + " de " + y;
+  }
+
+  function formatCurrency(raw) {
+    if (!raw) return "";
+    var digits = raw.replace(/[^\d,.-]/g, "");
+    if (!digits) return raw;
+    var num = digits.replace(/\./g, "").replace(",", ".");
+    var value = parseFloat(num);
+    if (isNaN(value)) return raw;
+    return "R$ " + value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function el(id) { return document.getElementById(id); }
+
+  function getGuarantors() {
+    var rows = document.querySelectorAll("#guarantorsList .guarantor-row");
+    var list = [];
+    rows.forEach(function (row) {
+      var nome = row.querySelector(".g-nome").value.trim();
+      var cpf = row.querySelector(".g-cpf").value.trim();
+      if (nome || cpf) list.push({ nome: nome, cpf: cpf });
+    });
+    return list;
+  }
+
+  function guarantorRowTemplate(nome, cpf) {
+    var wrap = document.createElement("div");
+    wrap.className = "guarantor-row";
+    wrap.innerHTML =
+      '<button type="button" class="remove-row" title="remover">×</button>' +
+      '<div class="field"><label>Nome do sócio</label><input class="g-nome" placeholder="Nome completo" value="' + (nome || "").replace(/"/g, "&quot;") + '"></div>' +
+      '<div class="field"><label>CPF</label><input class="g-cpf" placeholder="000.000.000-00" inputmode="numeric" value="' + (cpf || "").replace(/"/g, "&quot;") + '"></div>';
+    wrap.querySelector(".remove-row").addEventListener("click", function () {
+      wrap.remove();
+      renderContract();
+      persist();
+    });
+    wrap.querySelectorAll("input").forEach(function (inp) {
+      inp.addEventListener("input", function () { renderContract(); persist(); });
+    });
+    return wrap;
+  }
+
+  function addGuarantorRow(nome, cpf) {
+    el("guarantorsList").appendChild(guarantorRowTemplate(nome, cpf));
+  }
+
+  function setFieldValue(dataField, text, isPlaceholderFallback) {
+    var spans = document.querySelectorAll('[data-field="' + dataField + '"]');
+    spans.forEach(function (span) {
+      span.textContent = text;
+      span.classList.toggle("placeholder", !!isPlaceholderFallback);
+    });
+  }
+
+  var PLACEHOLDER_TEXT = {
+    nomeContratante: "[NOME DO CONTRATANTE]",
+    enderecoContratante: "[ENDEREÇO DO CONTRATANTE]",
+    cnpjContratante: "[CNPJ DO CONTRATANTE]",
+    nomeRepresentante: "[NOME DO REPRESENTANTE]",
+    cpfRepresentante: "[CPF DO REPRESENTANTE]",
+    dataAssinatura: "[DATA]",
+    inicioVigencia: "[INÍCIO DA VIGÊNCIA]",
+    planoNome: "[PLANO]",
+    planoAno: "[ANO]",
+    valorMensalidade: "[VALOR]",
+    faixaFaturamento: "[FAIXA DE FATURAMENTO]",
+    numProLabores: "[Nº PRÓ-LABORES]",
+    numFuncionarios: "[Nº FUNCIONÁRIOS]",
+    regimeTributario: "[REGIME TRIBUTÁRIO]",
+    diaVencimento: "[DIA DO VENCIMENTO]",
+    formaPagamento: "[FORMA DE PAGAMENTO]"
+  };
+
+  function renderContract() {
+    FIELDS.forEach(function (id) {
+      var node = el(id);
+      var raw = node.value.trim();
+      var display = raw;
+      var isEmpty = !raw;
+
+      if (id === "dataAssinatura" || id === "inicioVigencia") display = formatDateExtenso(raw);
+      if (id === "valorMensalidade") display = formatCurrency(raw);
+
+      if (isEmpty) display = PLACEHOLDER_TEXT[id] || "[" + id + "]";
+      setFieldValue(id, display, isEmpty);
+    });
+
+    var guarantors = getGuarantors();
+    var clauseList = el("guarantorsClauseList");
+    var signBlock = el("guarantorsSignBlock");
+    clauseList.innerHTML = "";
+    signBlock.innerHTML = "";
+
+    if (guarantors.length === 0) {
+      var p = document.createElement("p");
+      p.className = "field-value placeholder";
+      p.textContent = "- [NOME DO FIADOR]; inscrito no CPF nº [CPF DO FIADOR]";
+      clauseList.appendChild(p);
+
+      var sb = document.createElement("div");
+      sb.className = "sign-block";
+      sb.innerHTML = '<div class="sign-line"></div><p class="sign-role field-value placeholder">[NOME DO FIADOR] – CPF: [CPF DO FIADOR]</p>';
+      signBlock.appendChild(sb);
+    } else {
+      guarantors.forEach(function (g) {
+        var nome = g.nome || "[NOME DO FIADOR]";
+        var cpf = g.cpf || "[CPF DO FIADOR]";
+        var isPlaceholder = !g.nome && !g.cpf;
+
+        var lp = document.createElement("p");
+        lp.className = isPlaceholder ? "field-value placeholder" : "";
+        lp.textContent = "- " + nome + "; inscrito no CPF nº " + cpf;
+        clauseList.appendChild(lp);
+
+        var sb2 = document.createElement("div");
+        sb2.className = "sign-block";
+        sb2.innerHTML = '<div class="sign-line"></div><p class="sign-role' + (isPlaceholder ? " field-value placeholder" : "") + '">' + nome + " – CPF: " + cpf + "</p>";
+        signBlock.appendChild(sb2);
+      });
+    }
+
+    updateStatus();
+  }
+
+  function updateStatus() {
+    var filled = FIELDS.filter(function (id) { return el(id).value.trim(); }).length;
+    var pill = el("statusPill");
+    if (filled === 0) {
+      pill.textContent = "rascunho não iniciado";
+    } else if (filled === FIELDS.length) {
+      pill.textContent = "contrato completo";
+    } else {
+      pill.textContent = filled + " de " + FIELDS.length + " campos preenchidos";
+    }
+  }
+
+  function persist() {
+    try {
+      var data = {};
+      FIELDS.forEach(function (id) { data[id] = el(id).value; });
+      data.guarantors = getGuarantors();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) { /* storage unavailable — ignore */ }
+  }
+
+  function restore() {
+    var data = null;
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { data = null; }
+
+    if (data) {
+      FIELDS.forEach(function (id) {
+        if (data[id] !== undefined) el(id).value = data[id];
+      });
+      if (Array.isArray(data.guarantors) && data.guarantors.length) {
+        data.guarantors.forEach(function (g) { addGuarantorRow(g.nome, g.cpf); });
+      } else {
+        addGuarantorRow("", "");
+      }
+    } else {
+      var today = new Date();
+      el("dataAssinatura").value = today.toISOString().slice(0, 10);
+      el("planoAno").value = String(today.getFullYear());
+      addGuarantorRow("", "");
+    }
+  }
+
+  function wireForm() {
+    FIELDS.forEach(function (id) {
+      el(id).addEventListener("input", function () { renderContract(); persist(); });
+      el(id).addEventListener("change", function () { renderContract(); persist(); });
+    });
+
+    el("addGuarantorBtn").addEventListener("click", function () {
+      addGuarantorRow("", "");
+      renderContract();
+      persist();
+    });
+
+    el("clearBtn").addEventListener("click", function () {
+      if (!confirm("Limpar todos os campos preenchidos?")) return;
+      FIELDS.forEach(function (id) { el(id).value = ""; });
+      el("guarantorsList").innerHTML = "";
+      addGuarantorRow("", "");
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      renderContract();
+    });
+
+    el("printBtn").addEventListener("click", function () { window.print(); });
+
+    el("copyBtn").addEventListener("click", function () {
+      var text = el("contractPaper").innerText;
+      var status = el("copyStatus");
+      var done = function (ok) {
+        status.textContent = ok ? "Texto copiado para a área de transferência." : "Não foi possível copiar automaticamente — selecione o texto manualmente.";
+        setTimeout(function () { status.textContent = ""; }, 3500);
+      };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { fallbackCopy(text, done); });
+        } else {
+          fallbackCopy(text, done);
+        }
+      } catch (e) { fallbackCopy(text, done); }
+    });
+
+    function fallbackCopy(text, cb) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        cb(ok);
+      } catch (e) { cb(false); }
+    }
+  }
+
+  restore();
+  wireForm();
+  renderContract();
+})();
+</script>
