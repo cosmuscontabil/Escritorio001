@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-08-25
+- Escritórios flexíveis 2026: divisórias móveis, painéis deslizantes, acústica desde o projeto
+- Erro na escolha do piso/revestimento: absorção BIa, PEI e antiderrapância em área molhada
+- Tendência de restaurante/bar 2026: equilíbrio entre industrial (tijolo/metal) e madeira/tons terrosos
+
 ## 2026-08-07
 - Como verificar registro do arquiteto no CAU antes de contratar ("Ache um Arquiteto")
 - Tendência paisagismo 2026: hortas integradas à decoração, módulos verticais
