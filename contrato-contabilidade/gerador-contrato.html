@@ -1588,8 +1588,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       persist();
     });
 
-    el("clearBtn").addEventListener("click", function () {
-      if (!confirm("Limpar todos os campos preenchidos?")) return;
+    var clearBtn = el("clearBtn");
+    var clearArmed = false;
+    var clearTimer = null;
+    var clearDefaultLabel = clearBtn.textContent;
+
+    clearBtn.addEventListener("click", function () {
+      if (!clearArmed) {
+        clearArmed = true;
+        clearBtn.textContent = "confirmar limpeza?";
+        clearTimer = setTimeout(function () {
+          clearArmed = false;
+          clearBtn.textContent = clearDefaultLabel;
+        }, 3000);
+        return;
+      }
+
+      clearTimeout(clearTimer);
+      clearArmed = false;
+      clearBtn.textContent = clearDefaultLabel;
+
       FIELDS.forEach(function (id) { el(id).value = ""; });
       el("guarantorsList").innerHTML = "";
       addGuarantorRow("", "");
