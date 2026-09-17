@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-09-17
+- Alvará de funcionamento digital ("Alvará a Jato"): aprovação em 24h pra atividades de baixo risco
+- Materiais bio-baseados 2026: fibras naturais, biopolímeros, resíduos agrícolas
+- Risco de reforma sem contrato por escrito: divergência de orçamento/cronograma sem base pra resolver
+
 ## 2026-08-25
 - Escritórios flexíveis 2026: divisórias móveis, painéis deslizantes, acústica desde o projeto
 - Erro na escolha do piso/revestimento: absorção BIa, PEI e antiderrapância em área molhada

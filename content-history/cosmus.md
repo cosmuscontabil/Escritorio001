@@ -3,6 +3,11 @@
 Log de assuntos já usados nos roteiros de vídeo, mais recente primeiro.
 Regra: nenhum tema pode se repetir nos últimos 5 envios.
 
+## 2026-09-17
+- NFS-e Nacional virou obrigação de verdade (desde 1º/09) pra ME/EPP do Simples que prestam serviço
+- Carnê-leão mensal obrigatório pra quem recebe de pessoa física acima de R$5 mil/mês
+- eSocial Doméstico: multa de R$1.618 por empregado cadastrado fora do prazo (>2 dias/semana)
+
 ## 2026-08-25
 - Setembro/2026: janela decisiva pra escolher regime (Simples x novo sistema) e IBS/CBS dentro ou fora do DAS
 - DEFIS agora cruzada com o IRPF dos sócios, deixou de ser só formalidade
